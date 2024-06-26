@@ -21,7 +21,7 @@ class graph:
     def show_array(self, dist):
         print("Distancia del nodo al inicio")
         for i in range(self.N):
-            print("{0}{1}".format(i,dist[i])) 
+            print("{0} -> {1}".format(i,dist[i])) 
 
     def bellmanford(self, source):
         #la distancia de los nodos empieza por infinito en un array de la longitud de la canitdad de nodos
