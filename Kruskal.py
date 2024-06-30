@@ -33,7 +33,8 @@ class Graph:
         krusk = []
         parent = []
         rank = []
-        i, e = 0
+        i = 0
+        e = 0
         
         self.graph = sorted(self.graph, key=lambda item: item[2])
         
@@ -55,8 +56,8 @@ class Graph:
             if a != b:
                 e = e +1
                 krusk.append([s,d,w])
-                self.union(parent, rank, a,b)
-
+                self.union(parent, rank, a, b)
+        mst = 0
         print("MST-Kruskal: ")
         for s,d,w in krusk:
             mst= mst + w
@@ -71,15 +72,4 @@ g.addEdge(0, 2, 6)
 g.addEdge(0, 3, 5) 
 g.addEdge(1, 3, 15) 
 g.addEdge(2, 3, 4) 
-
 g.kruskal()
-
-
-
-
-
-        
-
-    
-
-        
