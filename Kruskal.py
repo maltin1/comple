@@ -63,7 +63,7 @@ class Graph:
             mst= mst + w
             print("%d - %d: %d" % (s, d, w))
 
-        print("Arbol de expansión minima: ", mst)
+        print("Costo total: ", mst)
 
 
 g = Graph(4) 
