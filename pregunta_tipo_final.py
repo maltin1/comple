@@ -6,7 +6,7 @@ x=nodoinicio, y = nododestino z = peso.
 - en la linea siguiente de una con 3 elementos se almacena el valor de K 
 
 Nota: falta mejorar :c
-
+el out put no aprece idk
 '''
 
 import math
@@ -150,17 +150,18 @@ def equipos(zonas_peligrosas, k):
         tam = [size for size in contador if size >0]
         return sorted(tam, reverse=True)
     
-def solve(file_path):
-    cases = read_txt(file_path)
-    results = []
-    
-    for zones, k in cases:
-        result = equipos(zones, k)
-        results.append(result)
-    
-    for result in results:
-        for count in result:
-            print(count)
-        print()
+    def solve(file_path):
+        cases = read_txt(file_path)
+        results = []
+        
+        for zones, k in cases:
+            result = equipos(zonas_peligrosas, k)
+            results.append(result)
+        
+        for result in results:
+            for count in result:
+                print(count)
+            print()
+
 info  = "linternas.txt"
-solve(info)
+Graph.solve(info)
