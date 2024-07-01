@@ -1,3 +1,15 @@
+'''
+usar una combinación de Disjoint Sets (Union-Find) y un enfoque 
+voraz para resolver el problema de agrupar las zonas. 
+La idea será construir un grafo completo donde cada nodo 
+representa una zona y cada arista está ponderada por la distancia
+ euclidiana entre las zonas. 
+ 
+Luego, usaremos el algoritmo de Kruskal para encontrar el Minimum
+Spanning Tree (MST). A partir del MST, eliminaremos las 
+k-1 aristas más largas para formar k componentes conectados
+ o sea el numero de zonas por sector.
+'''
 import math
 
 class Graph:
@@ -99,7 +111,7 @@ def clustering_with_kruskal(zones, k):
     cluster_sizes = [size for size in cluster_count if size > 0]
     return sorted(cluster_sizes, reverse=True)
 
-def main(file_path):
+def solve(file_path):
     cases = parse_input(file_path)
     results = []
     
@@ -135,6 +147,5 @@ class Disjoint:
             self.parent[b_root] += self.parent[a_root]
             self.parent[a_root] = b_root
 
-if __name__ == "__main__":
-    file_path = "path_to_your_file.txt"
-    main(file_path)
+file_path = "linternas.txt"
+solve(file_path)
