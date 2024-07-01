@@ -1,30 +1,55 @@
 import math
-from heapq import heappop, heappush
 
-# Clase para manejar conjuntos disjuntos (Union-Find)
-class DisjointSets:
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [0] * n
+class Graph:
+    def __init__(self, v):
+        self.V = v
+        self.graph = []
 
-    def find(self, u):
-        if self.parent[u] != u:
-            self.parent[u] = self.find(self.parent[u])
-        return self.parent[u]
+    def addEdge(self, s, d, w):
+        self.graph.append([s, d, w])
+    
+    def find(self, parent, i):
+        if parent[i] != i:
+            parent[i] = self.find(parent, parent[i])
+        return parent[i]
+    
+    def union(self, parent, rank, a, b):
+        if rank[a] < rank[b]:
+            parent[a] = b
+        elif rank[a] > rank[b]:
+            parent[b] = a
+        else:
+            parent[b] = a
+            rank[a] += 1
 
-    def union(self, u, v):
-        root_u = self.find(u)
-        root_v = self.find(v)
-        if root_u != root_v:
-            if self.rank[root_u] > self.rank[root_v]:
-                self.parent[root_v] = root_u
-            elif self.rank[root_u] < self.rank[root_v]:
-                self.parent[root_u] = root_v
-            else:
-                self.parent[root_v] = root_u
-                self.rank[root_u] += 1
+    def kruskal(self):
+        krusk = []
+        parent = []
+        rank = []
+        i = 0
+        e = 0
+        
+        self.graph = sorted(self.graph, key=lambda item: item[2])
+        
+        for node in range(self.V):
+            parent.append(node)
+            rank.append(0)
 
-# Función para leer el archivo de entrada
+        while e < self.V - 1:
+            s, d, w = self.graph[i]
+            i += 1
+            a = self.find(parent, s)
+            b = self.find(parent, d)
+            if a != b:
+                e += 1
+                krusk.append([s, d, w])
+                self.union(parent, rank, a, b)
+        
+        return krusk
+
+def euclidean_distance(point1, point2):
+    return math.sqrt(sum((a - b) ** 2 for a, b in zip(point1, point2)))
+
 def parse_input(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -48,62 +73,68 @@ def parse_input(file_path):
     
     return cases
 
-# Función para calcular la distancia euclidiana entre dos puntos
-def euclidean_distance(point1, point2):
-    return math.sqrt(sum((a - b) ** 2 for a, b in zip(point1, point2)))
-
-# Función para realizar el clustering usando el algoritmo de Kruskal
-def kruskal_clustering(zones, k):
+def clustering_with_kruskal(zones, k):
     n = len(zones)
-    edges = []
-    # Construir todas las aristas con su distancia
+    graph = Graph(n)
+    
     for i in range(n):
         for j in range(i + 1, n):
             distance = euclidean_distance(zones[i], zones[j])
-            edges.append((distance, i, j))
+            graph.addEdge(i, j, distance)
     
-    edges.sort()  # Ordenar las aristas por distancia
-    ds = DisjointSets(n)
-    mst = []
-    
-    # Crear el MST usando el algoritmo de Kruskal
-    for edge in edges:
-        distance, u, v = edge
-        if ds.find(u) != ds.find(v):
-            ds.union(u, v)
-            mst.append(edge)
-    
-    # Ordenar las aristas del MST en orden descendente y eliminar las (k-1) más largas
-    mst.sort(reverse=True, key=lambda x: x[0])
+    mst = graph.kruskal()
+    mst.sort(reverse=True, key=lambda x: x[2])
     
     for _ in range(k - 1):
-        if mst:
-            mst.pop(0)
+        mst.pop(0)
     
-    # Contar el número de zonas en cada cluster
-    clusters = [0] * n
-    for _, u, v in mst:
-        clusters[ds.find(u)] += 1
-        clusters[ds.find(v)] += 1
+    ds = Disjoint(n)
+    for s, d, w in mst:
+        ds.union(s, d)
     
-    cluster_sizes = [size for size in clusters if size > 0]
+    cluster_count = [0] * n
+    for i in range(n):
+        cluster_count[ds.find(i)] += 1
+    
+    cluster_sizes = [size for size in cluster_count if size > 0]
     return sorted(cluster_sizes, reverse=True)
 
-# Función principal
 def main(file_path):
     cases = parse_input(file_path)
     results = []
     
     for zones, k in cases:
-        result = kruskal_clustering(zones, k)
+        result = clustering_with_kruskal(zones, k)
         results.append(result)
     
-    # Imprimir los resultados en el formato requerido
     for result in results:
         for count in result:
             print(count)
         print()
 
+class Disjoint:
+    def __init__(self, n):
+        self.parent = [-1] * n
+    
+    def find(self, a):
+        if self.parent[a] < 0:
+            return a
+        self.parent[a] = self.find(self.parent[a])
+        return self.parent[a]
+    
+    def union(self, a, b):
+        a_root = self.find(a)
+        b_root = self.find(b)
+
+        if a_root == b_root:
+            return
+        if self.parent[a_root] < self.parent[b_root]:
+            self.parent[a_root] += self.parent[b_root]
+            self.parent[b_root] = a_root
+        else:
+            self.parent[b_root] += self.parent[a_root]
+            self.parent[a_root] = b_root
+
 if __name__ == "__main__":
-    file_path = "path_to_your_file.txt"  # Reemplaza esto con la ruta a tu archivo
+    file_path = "path_to_your_file.txt"
     main(file_path)
